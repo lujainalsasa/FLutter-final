@@ -39,7 +39,9 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ),
                 validator: (value) {
-                  if (value!.isEmpty || !value.contains('@')  ||  ! value.contains('.com')) {
+                  if (value!.isEmpty ||
+                      !value.contains('@') ||
+                      !value.contains('.com')) {
                     return 'Please enter valid email';
                   }
                   email = value;
