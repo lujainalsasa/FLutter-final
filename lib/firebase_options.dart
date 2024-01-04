@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -52,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '544522747476',
     projectId: 'midd-ffa10',
     authDomain: 'midd-ffa10.firebaseapp.com',
+    databaseURL: 'https://midd-ffa10-default-rtdb.firebaseio.com',
     storageBucket: 'midd-ffa10.appspot.com',
     measurementId: 'G-E66FBSKTVW',
   );
@@ -61,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:544522747476:android:86d546f96e53b5264737c1',
     messagingSenderId: '544522747476',
     projectId: 'midd-ffa10',
+    databaseURL: 'https://midd-ffa10-default-rtdb.firebaseio.com',
     storageBucket: 'midd-ffa10.appspot.com',
   );
 
@@ -69,7 +68,18 @@ class DefaultFirebaseOptions {
     appId: '1:544522747476:ios:c553cd7be31e627c4737c1',
     messagingSenderId: '544522747476',
     projectId: 'midd-ffa10',
+    databaseURL: 'https://midd-ffa10-default-rtdb.firebaseio.com',
     storageBucket: 'midd-ffa10.appspot.com',
     iosBundleId: 'com.example.midd',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAlrx6xIkljlywm2r7YDvrHitdibKbbCuQ',
+    appId: '1:544522747476:ios:87b87dd830f5a6c74737c1',
+    messagingSenderId: '544522747476',
+    projectId: 'midd-ffa10',
+    databaseURL: 'https://midd-ffa10-default-rtdb.firebaseio.com',
+    storageBucket: 'midd-ffa10.appspot.com',
+    iosBundleId: 'com.example.midd.RunnerTests',
   );
 }

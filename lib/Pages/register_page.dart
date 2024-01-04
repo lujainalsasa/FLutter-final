@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:midd/Pages/login_form_page.dart';
 import 'package:midd/pages/home_page.dart';
 import 'package:midd/pages/login_page.dart';
 
@@ -69,25 +71,18 @@ class _RegisterFormState extends State<RegisterForm> {
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20),
             child: TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(
-                  Icons.email,
-                  color: Colors.brown,
+                decoration: const InputDecoration(
+                  icon: Icon(
+                    Icons.email,
+                    color: Colors.brown,
+                  ),
+                  hintText: 'username@mail.com',
+                  labelText: 'Email',
+                  labelStyle: TextStyle(
+                    color: Colors.brown,
+                  ),
                 ),
-                hintText: 'username@mail.com',
-                labelText: 'Email',
-                labelStyle: TextStyle(
-                  color: Colors.brown,
-                ),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter valid email';
-                }
-                email = value;
-                return null;
-              },
-            ),
+                controller: emailController),
           ),
           const SizedBox(
             height: 15,
@@ -152,30 +147,19 @@ class _RegisterFormState extends State<RegisterForm> {
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20),
             child: TextFormField(
-              obscureText: true,
-              decoration: const InputDecoration(
-                  icon: Icon(
-                    Icons.lock,
-                    color: Colors.brown,
-                  ),
-                  hintText: '.............',
-                  labelText: 'Password',
-                  labelStyle: TextStyle(
-                    color: Colors.brown,
-                  ),
-                  errorStyle: TextStyle(color: Colors.red)),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter valid password';
-                } else {
-                  if (value.length < 8) {
-                    return "Enter a valid password > 8";
-                  }
-                }
-                pass = value;
-                return null;
-              },
-            ),
+                obscureText: true,
+                decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.lock,
+                      color: Colors.brown,
+                    ),
+                    hintText: '.............',
+                    labelText: 'Password',
+                    labelStyle: TextStyle(
+                      color: Colors.brown,
+                    ),
+                    errorStyle: TextStyle(color: Colors.red)),
+                controller: passwordController),
           ),
           const SizedBox(
             height: 15,
@@ -189,9 +173,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return HomePage();
-                    }));
+                    _handleSignUp();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -200,5 +182,23 @@ class _RegisterFormState extends State<RegisterForm> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleSignUp() async {
+    try {
+      await Auth()
+          .createWithEmailAnsPassword(
+              email: emailController.text, password: passwordController.text)
+          .whenComplete(
+        () {
+          print('User Added Success');
+        },
+      );
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return HomePage();
+      }));
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
 }

@@ -1,6 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:midd/Pages/home_page.dart';
 import 'package:midd/Pages/register_page.dart';
+
+class Auth {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final auth = FirebaseAuth.instance;
+  Future<void> signInWithEmailAndPassword(
+      {required String email, required String password}) async {
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  Future<void> createWithEmailAnsPassword(
+      {required String email, required String password}) async {
+    await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+  }
+}
+
+final TextEditingController emailController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -27,27 +46,18 @@ class _LoginFormState extends State<LoginForm> {
             Padding(
               padding: const EdgeInsets.only(right: 20, left: 20),
               child: TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(
-                    Icons.email,
-                    color: Colors.brown,
+                  decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.email,
+                      color: Colors.brown,
+                    ),
+                    hintText: 'username@mail.com',
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                      color: Color.fromARGB(255, 104, 103, 102),
+                    ),
                   ),
-                  hintText: 'username@mail.com',
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    color: Color.fromARGB(255, 104, 103, 102),
-                  ),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty ||
-                      !value.contains('@') ||
-                      !value.contains('.com')) {
-                    return 'Please enter valid email';
-                  }
-                  email = value;
-                  return null;
-                },
-              ),
+                  controller: emailController),
             ),
             const SizedBox(
               height: 25,
@@ -55,30 +65,19 @@ class _LoginFormState extends State<LoginForm> {
             Padding(
               padding: const EdgeInsets.only(right: 20, left: 20),
               child: TextFormField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                    icon: Icon(
-                      Icons.lock,
-                      color: Colors.brown,
-                    ),
-                    hintText: '.............',
-                    labelText: 'Password',
-                    labelStyle: TextStyle(
-                      color: Colors.brown,
-                    ),
-                    errorStyle: TextStyle(color: Colors.red)),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter valid password';
-                  } else {
-                    if (value.length < 8) {
-                      return "Enter a valid password > 8";
-                    }
-                  }
-                  pass = value;
-                  return null;
-                },
-              ),
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                      icon: Icon(
+                        Icons.lock,
+                        color: Colors.brown,
+                      ),
+                      hintText: '.............',
+                      labelText: 'Password',
+                      labelStyle: TextStyle(
+                        color: Colors.brown,
+                      ),
+                      errorStyle: TextStyle(color: Colors.red)),
+                  controller: passwordController),
             ),
             const SizedBox(
               height: 25,
@@ -115,9 +114,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) {
-                        return HomePage();
-                      }));
+                      _handleSignin();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -159,5 +156,18 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSignin() async {
+    try {
+      await Auth().signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+      print('login sucessfully');
+      Navigator.push(context, MaterialPageRoute(builder: (_) {
+        return HomePage();
+      }));
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
 }
