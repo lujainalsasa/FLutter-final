@@ -4,16 +4,16 @@ import 'package:midd/Pages/home_page.dart';
 import 'package:midd/Pages/register_page.dart';
 
 class Auth {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   final auth = FirebaseAuth.instance;
   Future<void> signInWithEmailAndPassword(
       {required String email, required String password}) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> createWithEmailAnsPassword(
       {required String email, required String password}) async {
-    await _auth.createUserWithEmailAndPassword(
+    await auth.createUserWithEmailAndPassword(
         email: email, password: password);
   }
 }

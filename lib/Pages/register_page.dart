@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:midd/Pages/login_form_page.dart';
 import 'package:midd/pages/home_page.dart';
@@ -87,63 +88,63 @@ class _RegisterFormState extends State<RegisterForm> {
           const SizedBox(
             height: 15,
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20, left: 20),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(
-                  Icons.phone,
-                  color: Colors.brown,
-                ),
-                hintText: '+96277362627',
-                labelText: 'PhoneNumber',
-                labelStyle: TextStyle(
-                  color: Colors.brown,
-                ),
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter valid phone number';
-                } else {
-                  if (!(double.tryParse(value) != null)) {
-                    return "Enter a valid number";
-                  }
-                }
-                phoneN = int.parse(value);
-                return null;
-              },
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20, left: 20),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(
-                  Icons.date_range,
-                  color: Colors.brown,
-                ),
-                hintText: 'd/m/y',
-                labelText: 'BirthDate',
-                labelStyle: TextStyle(
-                  color: Colors.brown,
-                ),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter valid Date';
-                }
-                dateD = value;
-                return null;
-              },
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 20, left: 20),
+          //   child: TextFormField(
+          //     decoration: const InputDecoration(
+          //       icon: Icon(
+          //         Icons.phone,
+          //         color: Colors.brown,
+          //       ),
+          //       hintText: '+96277362627',
+          //       labelText: 'PhoneNumber',
+          //       labelStyle: TextStyle(
+          //         color: Colors.brown,
+          //       ),
+          //     ),
+          //     keyboardType: TextInputType.number,
+          //     validator: (value) {
+          //       if (value!.isEmpty) {
+          //         return 'Please enter valid phone number';
+          //       } else {
+          //         if (!(double.tryParse(value) != null)) {
+          //           return "Enter a valid number";
+          //         }
+          //       }
+          //       phoneN = int.parse(value);
+          //       return null;
+          //     },
+          //   ),
+          // ),
+          // const SizedBox(
+          //   height: 15,
+          // ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 20, left: 20),
+          //   child: TextFormField(
+          //     decoration: const InputDecoration(
+          //       icon: Icon(
+          //         Icons.date_range,
+          //         color: Colors.brown,
+          //       ),
+          //       hintText: 'd/m/y',
+          //       labelText: 'BirthDate',
+          //       labelStyle: TextStyle(
+          //         color: Colors.brown,
+          //       ),
+          //     ),
+          //     validator: (value) {
+          //       if (value!.isEmpty) {
+          //         return 'Please enter valid Date';
+          //       }
+          //       dateD = value;
+          //       return null;
+          //     },
+          //   ),
+          // ),
+          // const SizedBox(
+          //   height: 15,
+          // ),
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20),
             child: TextFormField(
@@ -184,6 +185,8 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
+  final DatabaseReference userbref =
+      FirebaseDatabase.instance.ref().child('users');
   Future<void> _handleSignUp() async {
     try {
       await Auth()
@@ -191,7 +194,13 @@ class _RegisterFormState extends State<RegisterForm> {
               email: emailController.text, password: passwordController.text)
           .whenComplete(
         () {
+          var user = {
+            'email': emailController.text,
+            'padssword': passwordController.text
+          };
           print('User Added Success');
+          userbref.child(Auth().auth.currentUser!.uid).set(user);
+          print('User Added to database');
         },
       );
       Navigator.push(context, MaterialPageRoute(builder: (_) {
