@@ -1,11 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:midd/Pages/home_page.dart';
+import 'package:midd/Pages/login_form_page.dart';
+import 'package:midd/Pages/register_page.dart';
+import 'package:midd/models/user_details.dart';
 
-String name = 'Lujain Alsasa';
-String Email = 'lujain@gmail.com';
-int phoneN = 0;
-String dateD = "";
-String pass = "";
+class userInfo extends StatefulWidget {
+  const userInfo({super.key});
+
+  @override
+  State<userInfo> createState() => _userInfoState();
+}
+
+class _userInfoState extends State<userInfo> {
+  final FirebaseService fbs = FirebaseService();
+  UserDetails? usr;
+
+  late String imgurl = "";
+  @override
+  void initState() {
+    super.initState();
+    print('user not equal to null');
+    fatchUserData();
+  }
+
+  Future<void> fatchUserData() async {
+    try {
+      UserDetails? us = await fbs.getUserFormDatabase();
+      if (us != null) {
+        setState(() {
+          usr = us;
+          imgurl = usr!.profilePhoto;
+        });
+      } else {
+        print('user not found');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (usr != null) {
+      return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.brown.shade300,
+            title: Text("User Information"),
+          ),
+          drawer: LeftDrawerWidget(),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const CircleAvatar(
+                  radius: 70,
+                  backgroundImage: NetworkImage("usr!.profilePhoto"),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Card(
+                  child: Row(
+                    children: [
+                      Text('Full Name :'),
+                      Icon(Icons.person),
+                      Text(usr!.name),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Card(
+                  child: Row(
+                    children: [
+                      Text('Email :'),
+                      Icon(Icons.email),
+                      Text(usr!.email),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Card(
+                  child: Row(
+                    children: [
+                      Text('Phone Number :'),
+                      Icon(Icons.phone),
+                      Text(usr!.phoneN),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Card(
+                  child: Row(
+                    children: [
+                      Text('Address:'),
+                      Icon(Icons.location_city),
+                      Text(usr!.address),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ));
+    } else {
+      return Center(child: CircularProgressIndicator());
+    }
+  }
+}
 
 class notifications extends StatelessWidget {
   const notifications({super.key});
@@ -118,10 +224,6 @@ class Reminders extends StatelessWidget {
   }
 }
 
-TextEditingController myController = TextEditingController();
-TextEditingController myController2 = TextEditingController();
-TextEditingController myController3 = TextEditingController();
-
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -153,13 +255,7 @@ class _SettingsState extends State<Settings> {
                         icon: Icon(Icons.person, color: Colors.brown),
                         labelText: "New name",
                         errorStyle: TextStyle(color: Colors.red)),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      name = value;
-                      return null;
-                    },
+                    controller: fullNameController,
                   )),
               Padding(
                 padding:
@@ -170,17 +266,7 @@ class _SettingsState extends State<Settings> {
                       icon: Icon(Icons.password, color: Colors.brown),
                       labelText: "New password",
                       errorStyle: TextStyle(color: Colors.red)),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter "New password" ';
-                    } else {
-                      if (value.length < 8) {
-                        return "Enter a valid password > 8";
-                      }
-                    }
-                    pass = value;
-                    return null;
-                  },
+                  controller: passwordController,
                 ),
               ),
               Padding(
@@ -190,17 +276,7 @@ class _SettingsState extends State<Settings> {
                       icon: Icon(Icons.numbers, color: Colors.brown),
                       labelText: "New number",
                       errorStyle: TextStyle(color: Colors.red)),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter valid" phone number"';
-                    } else {
-                      if (!(double.tryParse(value) != null)) {
-                        return "Enter a valid number";
-                      }
-                    }
-                    phoneN = int.parse(value);
-                    return null;
-                  },
+                  controller: numberController,
                 ),
               ),
               Padding(
@@ -269,8 +345,8 @@ class _LeftDrawerWidgetState extends State<LeftDrawerWidget> {
       child: ListView(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text('$name'),
-            accountEmail: Text('$Email'),
+            accountName: Text('${fullNameController.text}'),
+            accountEmail: Text('${emailController.text}'),
             currentAccountPicture: Icon(
               Icons.girl_sharp,
               size: 80,
@@ -306,6 +382,16 @@ class _MenuListTileState extends State<MenuListTile> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        ListTile(
+          leading: Icon(Icons.person),
+          iconColor: Colors.brown,
+          title: Text("User Info"),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return userInfo();
+            }));
+          },
+        ),
         ListTile(
           leading: Icon(Icons.notifications),
           iconColor: Colors.brown,

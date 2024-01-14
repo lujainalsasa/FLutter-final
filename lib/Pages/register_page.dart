@@ -1,9 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:midd/Pages/login_form_page.dart';
-import 'package:midd/pages/home_page.dart';
+import 'package:midd/Pages/profile_page.dart';
+import 'package:midd/models/user_details.dart';
 import 'package:midd/pages/login_page.dart';
+import 'package:file_picker/file_picker.dart';
+
+final TextEditingController numberController = TextEditingController();
+final TextEditingController addressController = TextEditingController();
+final TextEditingController fullNameController = TextEditingController();
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -58,10 +65,6 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  int phoneN = 0;
-  String dateD = "";
-  String pass = "";
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -69,6 +72,47 @@ class _RegisterFormState extends State<RegisterForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          img == null
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 20),
+                  child: IconButton(
+                    icon: Icon(Icons.person),
+                    onPressed: () {
+                      pickImage();
+                    },
+                  ))
+              : Padding(
+                  padding: EdgeInsets.only(right: 20, left: 20),
+                  child: IconButton(
+                    icon: CircleAvatar(
+                      backgroundImage: MemoryImage(img!.files.first.bytes!),
+                    ),
+                    onPressed: () {
+                      pickImage();
+                    },
+                  )),
+          const SizedBox(
+            height: 15,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20, left: 20),
+            child: TextFormField(
+                decoration: const InputDecoration(
+                  icon: Icon(
+                    Icons.email,
+                    color: Colors.brown,
+                  ),
+                  hintText: 'Lujain Alsasa',
+                  labelText: 'Full Name',
+                  labelStyle: TextStyle(
+                    color: Colors.brown,
+                  ),
+                ),
+                controller: fullNameController),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20),
             child: TextFormField(
@@ -88,63 +132,46 @@ class _RegisterFormState extends State<RegisterForm> {
           const SizedBox(
             height: 15,
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 20, left: 20),
-          //   child: TextFormField(
-          //     decoration: const InputDecoration(
-          //       icon: Icon(
-          //         Icons.phone,
-          //         color: Colors.brown,
-          //       ),
-          //       hintText: '+96277362627',
-          //       labelText: 'PhoneNumber',
-          //       labelStyle: TextStyle(
-          //         color: Colors.brown,
-          //       ),
-          //     ),
-          //     keyboardType: TextInputType.number,
-          //     validator: (value) {
-          //       if (value!.isEmpty) {
-          //         return 'Please enter valid phone number';
-          //       } else {
-          //         if (!(double.tryParse(value) != null)) {
-          //           return "Enter a valid number";
-          //         }
-          //       }
-          //       phoneN = int.parse(value);
-          //       return null;
-          //     },
-          //   ),
-          // ),
-          // const SizedBox(
-          //   height: 15,
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 20, left: 20),
-          //   child: TextFormField(
-          //     decoration: const InputDecoration(
-          //       icon: Icon(
-          //         Icons.date_range,
-          //         color: Colors.brown,
-          //       ),
-          //       hintText: 'd/m/y',
-          //       labelText: 'BirthDate',
-          //       labelStyle: TextStyle(
-          //         color: Colors.brown,
-          //       ),
-          //     ),
-          //     validator: (value) {
-          //       if (value!.isEmpty) {
-          //         return 'Please enter valid Date';
-          //       }
-          //       dateD = value;
-          //       return null;
-          //     },
-          //   ),
-          // ),
-          // const SizedBox(
-          //   height: 15,
-          // ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20, left: 20),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(
+                  Icons.phone,
+                  color: Colors.brown,
+                ),
+                hintText: '+96277362627',
+                labelText: 'PhoneNumber',
+                labelStyle: TextStyle(
+                  color: Colors.brown,
+                ),
+              ),
+              controller: numberController,
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20, left: 20),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(
+                  Icons.date_range,
+                  color: Colors.brown,
+                ),
+                hintText: 'Amman,Jordan',
+                labelText: 'Address',
+                labelStyle: TextStyle(
+                  color: Colors.brown,
+                ),
+              ),
+              controller: addressController,
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20),
             child: TextFormField(
@@ -186,28 +213,62 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   final DatabaseReference userbref =
-      FirebaseDatabase.instance.ref().child('users');
+      FirebaseDatabase.instance.ref().child('Users');
+  final Reference profileimage = FirebaseStorage.instance
+      .ref()
+      .child("UserProfilePage/${DateTime.now().microsecondsSinceEpoch}.jpg");
+
   Future<void> _handleSignUp() async {
-    try {
-      await Auth()
-          .createWithEmailAnsPassword(
-              email: emailController.text, password: passwordController.text)
-          .whenComplete(
-        () {
-          var user = {
-            'email': emailController.text,
-            'padssword': passwordController.text
-          };
-          print('User Added Success');
-          userbref.child(Auth().auth.currentUser!.uid).set(user);
-          print('User Added to database');
-        },
-      );
-      Navigator.push(context, MaterialPageRoute(builder: (_) {
-        return HomePage();
-      }));
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
+    UploadTask uploadtask = profileimage.putData(img!.files.first.bytes!);
+    String imgurl = await (await uploadtask).ref.getDownloadURL();
+
+    await Auth()
+        .createWithEmailAnsPassword(
+            email: emailController.text, password: passwordController.text)
+        .whenComplete(() {
+      print('user added successfully');
+
+      Auth().auth.authStateChanges().first;
+      Future.delayed(Duration(seconds: 5)).then((value) {
+        try {
+          UserDetails user = UserDetails(
+              name: fullNameController.text,
+              email: emailController.text,
+              phoneN: numberController.text,
+              address: addressController.text,
+              profilePhoto:imgurl
+          );
+          if (Auth().auth.currentUser != null) {
+            userbref
+                .child(Auth().auth.currentUser!.uid)
+                .set(user.toMap())
+                .then((value) {
+              print('user added sucessfully to real time database');
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return userInfo();
+              }));
+            });
+          } else {
+            print('the user uid is stell null');
+          }
+        } on FirebaseAuthException catch (error) {
+          print('error acuured...........');
+          print(error.message);
+        }
+      });
+    });
+  }
+
+  FilePickerResult? img;
+  Future<void> pickImage() async {
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result == null) {
+      return null;
+    } else {
+      setState(() {
+        img = result;
+      });
     }
   }
 }

@@ -21,6 +21,7 @@ class Auth {
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
 
+
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
@@ -30,8 +31,6 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  String pass = "";
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -100,7 +99,7 @@ class _LoginFormState extends State<LoginForm> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snak);
                   },
-                  child: const Text("Forget password?      ",
+                  child: const Text("Forget password?  ",
                       textScaleFactor: 0.75,
                       style: TextStyle(color: Colors.brown)),
                 ),
