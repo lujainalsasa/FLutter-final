@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:midd/Pages/login_form_page.dart';
+import 'package:midd/models/coffee.dart';
 
 class UserDetails {
   String name;
@@ -67,4 +68,33 @@ class FirebaseService {
       return null;
     }
   }
+  
+   Future<List<Coffee>> getProductDetails() async {
+    DatabaseReference productsRef =
+        FirebaseDatabase.instance.ref().child("Products");
+
+    try {
+      DatabaseEvent event = await productsRef.once();
+
+      if (event.snapshot.value != null) {
+        print(event.snapshot.value.toString());
+
+        List<Coffee> productList = [];
+        Map<dynamic, dynamic> snapshotData = event.snapshot.value as dynamic;
+
+        snapshotData.forEach((key, value) {
+          productList.add(Coffee.fromMap(value as Map<dynamic, dynamic>));
+        });
+
+        print("Product List: $productList");
+        return productList;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error getting product details: $e');
+      return [];
+    }
+  }
+
 }

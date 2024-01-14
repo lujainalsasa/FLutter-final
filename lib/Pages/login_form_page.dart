@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:midd/Pages/home_page.dart';
+import 'package:midd/Pages/profile_page.dart';
 import 'package:midd/Pages/register_page.dart';
 
 class Auth {
-  
   final auth = FirebaseAuth.instance;
   Future<void> signInWithEmailAndPassword(
       {required String email, required String password}) async {
@@ -13,14 +13,12 @@ class Auth {
 
   Future<void> createWithEmailAnsPassword(
       {required String email, required String password}) async {
-    await auth.createUserWithEmailAndPassword(
-        email: email, password: password);
+    await auth.createUserWithEmailAndPassword(email: email, password: password);
   }
 }
 
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
-
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});

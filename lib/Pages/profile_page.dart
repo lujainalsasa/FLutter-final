@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:midd/Pages/home_page.dart';
 import 'package:midd/Pages/login_form_page.dart';
 import 'package:midd/Pages/register_page.dart';
+import 'package:midd/models/coffee.dart';
 import 'package:midd/models/user_details.dart';
 
 class userInfo extends StatefulWidget {
@@ -52,58 +53,86 @@ class _userInfoState extends State<userInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const CircleAvatar(
+                const SizedBox(
+                  height: 25,
+                ),
+                CircleAvatar(
                   radius: 70,
-                  backgroundImage: NetworkImage("usr!.profilePhoto"),
+                  backgroundImage: NetworkImage(usr!.profilePhoto),
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 15,
                 ),
                 Card(
                   child: Row(
                     children: [
-                      Text('Full Name :'),
-                      Icon(Icons.person),
-                      Text(usr!.name),
+                      Icon(Icons.person, color: Colors.brown),
+                      Text('Full Name : ',
+                          style: TextStyle(color: Colors.brown)),
+                      Text(usr!.name, style: TextStyle(color: Colors.brown)),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
+                  elevation: 5,
+                  margin: EdgeInsets.all(20),
                 ),
                 Card(
                   child: Row(
                     children: [
-                      Text('Email :'),
-                      Icon(Icons.email),
-                      Text(usr!.email),
+                      Icon(Icons.email, color: Colors.brown),
+                      Text(' Email : ', style: TextStyle(color: Colors.brown)),
+                      Text(usr!.email, style: TextStyle(color: Colors.brown)),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
+                  elevation: 5,
+                  margin: EdgeInsets.all(20),
                 ),
                 Card(
                   child: Row(
                     children: [
-                      Text('Phone Number :'),
-                      Icon(Icons.phone),
-                      Text(usr!.phoneN),
+                      Icon(Icons.phone, color: Colors.brown),
+                      Text(' Phone Number : ',
+                          style: TextStyle(color: Colors.brown)),
+                      Text(usr!.phoneN, style: TextStyle(color: Colors.brown)),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
+                  elevation: 5,
+                  margin: EdgeInsets.all(20),
                 ),
                 Card(
                   child: Row(
                     children: [
-                      Text('Address:'),
-                      Icon(Icons.location_city),
-                      Text(usr!.address),
+                      Icon(Icons.location_city, color: Colors.brown),
+                      Text(' Address: ', style: TextStyle(color: Colors.brown)),
+                      Text(usr!.address, style: TextStyle(color: Colors.brown)),
                     ],
                   ),
+                  elevation: 5,
+                  margin: EdgeInsets.all(20),
                 ),
+                const SizedBox(
+                  height: 15,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Auth().auth.signOut();
+                      Navigator.pushNamed(context, "/");
+                    },
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.white, alignment: Alignment.centerLeft),
+                    child: Text(
+                      'SignOut',
+                      style: TextStyle(color: Colors.brown),
+                    )),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.white, alignment: Alignment.centerLeft),
+                    onPressed: () {
+                      //  addtodb();
+                    },
+                    child: Text(
+                      "Add Data To FB",
+                      style: TextStyle(color: Colors.brown),
+                    )),
               ],
             ),
           ));
@@ -443,6 +472,15 @@ class _MenuListTileState extends State<MenuListTile> {
             Navigator.push(context, MaterialPageRoute(builder: (_) {
               return Settings();
             }));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          iconColor: Colors.brown,
+          title: Text("LogOut"),
+          onTap: () {
+            Auth().auth.signOut();
+            Navigator.pushNamed(context, "/");
           },
         ),
       ],

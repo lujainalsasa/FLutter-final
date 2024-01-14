@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:midd/Pages/home_page.dart';
 import 'package:midd/Pages/login_form_page.dart';
-import 'package:midd/Pages/profile_page.dart';
 import 'package:midd/models/user_details.dart';
 import 'package:midd/pages/login_page.dart';
 import 'package:file_picker/file_picker.dart';
@@ -76,7 +76,10 @@ class _RegisterFormState extends State<RegisterForm> {
               ? Padding(
                   padding: const EdgeInsets.only(right: 20, left: 20),
                   child: IconButton(
-                    icon: Icon(Icons.person),
+                    icon: Icon(
+                      Icons.photo,
+                      color: Colors.brown,
+                    ),
                     onPressed: () {
                       pickImage();
                     },
@@ -99,10 +102,10 @@ class _RegisterFormState extends State<RegisterForm> {
             child: TextFormField(
                 decoration: const InputDecoration(
                   icon: Icon(
-                    Icons.email,
+                    Icons.person,
                     color: Colors.brown,
                   ),
-                  hintText: 'Lujain Alsasa',
+                  hintText: 'User Name',
                   labelText: 'Full Name',
                   labelStyle: TextStyle(
                     color: Colors.brown,
@@ -127,6 +130,14 @@ class _RegisterFormState extends State<RegisterForm> {
                     color: Colors.brown,
                   ),
                 ),
+                validator: (value) {
+                  if (value!.isEmpty ||
+                      !value.contains('@') ||
+                      !value.contains('.com')) {
+                    return 'Please enter valid email';
+                  }
+                  return null;
+                },
                 controller: emailController),
           ),
           const SizedBox(
@@ -187,6 +198,16 @@ class _RegisterFormState extends State<RegisterForm> {
                       color: Colors.brown,
                     ),
                     errorStyle: TextStyle(color: Colors.red)),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter valid password';
+                  } else {
+                    if (value.length < 8) {
+                      return "Enter a valid password > 8";
+                    }
+                  }
+                  return null;
+                },
                 controller: passwordController),
           ),
           const SizedBox(
@@ -236,8 +257,7 @@ class _RegisterFormState extends State<RegisterForm> {
               email: emailController.text,
               phoneN: numberController.text,
               address: addressController.text,
-              profilePhoto:imgurl
-          );
+              profilePhoto: imgurl);
           if (Auth().auth.currentUser != null) {
             userbref
                 .child(Auth().auth.currentUser!.uid)
@@ -245,7 +265,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 .then((value) {
               print('user added sucessfully to real time database');
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return userInfo();
+                return HomePage();
               }));
             });
           } else {
